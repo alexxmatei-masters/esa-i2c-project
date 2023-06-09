@@ -137,11 +137,7 @@ int main(void)
 
 	    }
 
-
-
-
-
-	      if (buttonState == GPIO_PIN_RESET) {
+	      if (buttonState == GPIO_PIN_RESET && lastButtonState == GPIO_PIN_RESET) {
 
 	    	  flagState = 1;
 	      }
