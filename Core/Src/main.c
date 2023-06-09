@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MASTER_NODE
+//#define MASTER_NODE
 
 #ifndef MASTER_NODE
 #define SLAVE_NODE
@@ -82,14 +82,18 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  uint8_t sendData[] = "Hello, slave!";
+  uint8_t sendData[] = "\r\nHello, slave!\r\n";
+  uint8_t ledStatus[] = "0";
+
 
 #ifdef MASTER_NODE
   // Send test message from master to slave
   uint8_t slaveAddress = 0x42;
+  uint8_t master_ledStatus_rx[sizeof(ledStatus)];
 #endif
 
 #ifdef SLAVE_NODE
+//  uint8_t masterAddress = 0x0;
   // Define size of the receivedData based on sendData size
   uint8_t receivedData[sizeof(sendData)];
 #endif
@@ -119,20 +123,27 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef MASTER_NODE
-    uint8_t data[] = "Master node active!\r\n";
-    HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, sendData, sizeof(sendData) - 1, HAL_MAX_DELAY);
+    uint8_t data[] = "\r\nMaster node active!\r\n";
+    HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
+    HAL_I2C_Master_Receive(&hi2c1, slaveAddress, master_ledStatus_rx, sizeof(master_ledStatus_rx), HAL_MAX_DELAY);
+    HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, sendData, sizeof(sendData), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart2, master_ledStatus_rx, sizeof(master_ledStatus_rx) - 1, HAL_MAX_DELAY);
+    HAL_Delay(100);
 #else
 #ifdef SLAVE_NODE
     uint8_t data[] = "\r\nSlave node active!\r\n";
+    HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
+    HAL_I2C_Slave_Transmit(&hi2c1, ledStatus, sizeof(ledStatus), HAL_MAX_DELAY);
     HAL_I2C_Slave_Receive(&hi2c1, receivedData, sizeof(receivedData), HAL_MAX_DELAY);
     HAL_UART_Transmit(&huart2, receivedData, sizeof(receivedData) - 1, HAL_MAX_DELAY);
+    HAL_Delay(100);
 #else
     uint8_t data[] = "Error, node not configured!\r\n";
+    HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
 #endif
 #endif
 
-    HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
-    //    HAL_Delay(1000);
+
   }
   /* USER CODE END 3 */
 }
