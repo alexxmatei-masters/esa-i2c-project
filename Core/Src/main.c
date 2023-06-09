@@ -98,6 +98,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  uint8_t data[] = "Hello, UART!\r\n";
+	  HAL_UART_Transmit(&huart2, data, sizeof(data)-1, HAL_MAX_DELAY);
+	  HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
