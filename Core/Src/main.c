@@ -82,7 +82,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  uint8_t sendData[] = "\r\nHello, slave!\r\n";
+  uint8_t sendData[] = "3";
   uint8_t ledStatus[] = "0";
 
 
@@ -126,7 +126,16 @@ int main(void)
     uint8_t data[] = "\r\nMaster node active!\r\n";
     HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
     HAL_I2C_Master_Receive(&hi2c1, slaveAddress, master_ledStatus_rx, sizeof(master_ledStatus_rx), HAL_MAX_DELAY);
-    HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, sendData, sizeof(sendData), HAL_MAX_DELAY);
+    if (strcmp((char*)master_ledStatus_rx, "0") == 0)  {
+    	HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, "1", sizeof(sendData), HAL_MAX_DELAY);
+    } else if (strcmp((char*)master_ledStatus_rx, "1") == 0) {
+
+    	HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, "0", sizeof(sendData), HAL_MAX_DELAY);
+    } else  {
+
+    	HAL_I2C_Master_Transmit(&hi2c1, slaveAddress, "2", sizeof(sendData), HAL_MAX_DELAY);
+    }
+
     HAL_UART_Transmit(&huart2, master_ledStatus_rx, sizeof(master_ledStatus_rx) - 1, HAL_MAX_DELAY);
     HAL_Delay(100);
 #else
