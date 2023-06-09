@@ -31,6 +31,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MASTER_NODE
+
+#ifndef MASTER_NODE
+	#define SLAVE_NODE
+#endif
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -102,9 +107,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  uint8_t data[] = "Hello, UART!\r\n";
-	  HAL_UART_Transmit(&huart2, data, sizeof(data)-1, HAL_MAX_DELAY);
-	  HAL_Delay(1000);
+	#ifdef MASTER_NODE
+		uint8_t data[] = "Master node active!\r\n";
+	#else
+		#ifdef SLAVE_NODE
+			uint8_t data[] = "Slave node active!\r\n";
+		#else
+			uint8_t data[] = "Error, node not configured!\r\n";
+		#endif
+	#endif
+
+    HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
   }
   /* USER CODE END 3 */
 }
