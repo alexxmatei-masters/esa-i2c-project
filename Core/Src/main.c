@@ -123,6 +123,12 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 #ifdef MASTER_NODE
+	  GPIO_PinState buttonState = HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin);
+
+	      if (buttonState == GPIO_PIN_RESET) {
+
+	      }
+
     uint8_t data[] = "\r\nMaster node active!\r\n";
     HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
     HAL_I2C_Master_Receive(&hi2c1, slaveAddress, master_ledStatus_rx, sizeof(master_ledStatus_rx), HAL_MAX_DELAY);
@@ -137,7 +143,7 @@ int main(void)
     }
 
     HAL_UART_Transmit(&huart2, master_ledStatus_rx, sizeof(master_ledStatus_rx) - 1, HAL_MAX_DELAY);
-    HAL_Delay(100);
+//    HAL_Delay(100);
 #else
 #ifdef SLAVE_NODE
     uint8_t data[] = "\r\nSlave node active!\r\n";
@@ -145,7 +151,7 @@ int main(void)
     HAL_I2C_Slave_Transmit(&hi2c1, ledStatus, sizeof(ledStatus), HAL_MAX_DELAY);
     HAL_I2C_Slave_Receive(&hi2c1, receivedData, sizeof(receivedData), HAL_MAX_DELAY);
     HAL_UART_Transmit(&huart2, receivedData, sizeof(receivedData) - 1, HAL_MAX_DELAY);
-    HAL_Delay(100);
+//    HAL_Delay(100);
 #else
     uint8_t data[] = "Error, node not configured!\r\n";
     HAL_UART_Transmit(&huart2, data, sizeof(data) - 1, HAL_MAX_DELAY);
